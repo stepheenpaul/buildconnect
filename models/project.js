@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
 const projectSchema = new Schema({
   title: {
@@ -13,17 +13,25 @@ const projectSchema = new Schema({
   },
 
   bids: [
-
+    {
+      type: Schema.Types.ObjectId,
+      ref: "bid",
+    }
   ],
 
   bid_requests: [
 
   ],
 
+  builder: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+  },
+
   author: {
 
-  }
+  },
   
 }, {timestamps: true});
-const Project = mongoose.model("project", projectSchema);
-module.exports = Project;
+
+module.exports = { Project:model("project", projectSchema) };

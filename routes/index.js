@@ -1,16 +1,14 @@
-const isUser = require("../config/middlewares");
+const {isUserLoggedIn} = require("../config/middlewares");
 const authRouter =  require("./auth/auth.routes");
-const authRouter =  require("./");
+const projectRouter = require("./project/project.routes")
+const bidRouter = require("./bid/bid.routes")
 
 
 const routers = (app) => {
 
-    // route to handle all get requests
-    app.use("/", require("./routes/index"))
-
-    app.use("/", require("./routes/registerRoutes"))
-    app.use("/", require("./routes/invest"))
-    app.use("/", require("./routes/contact"))
+    app.use("/", authRouter)
+    app.use("/bid", isUserLoggedIn, bidRouter)
+    app.use("/project", isUserLoggedIn, projectRouter);
     
 }
    

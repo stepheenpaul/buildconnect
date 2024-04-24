@@ -1,0 +1,28 @@
+<div style="z-index: 999; position: relative;" class="container">
+    <% if (success_message && success_message.length > 0) { %>
+      <div style="position: absolute; width: 30%; top: 63px; right: 30px; font-size: 12px;" class="alert alert-soft-success text-left auto-hide" role="alert">
+        <i class="tio-checkmark-circle-outlined mt-1 mr-1"></i>
+        <strong>
+          <%= success_message %>
+        </strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <i class="tio-clear tio-lg"></i>
+        </button>
+      </div>
+    <% } %>
+  
+    <% if (error_message && error_message.length > 0) { %>
+      <div style="position: absolute; width: 30%; top: 63px; right: 30px; font-size: 12px;" class="alert alert-soft-danger text-left auto-hide" role="alert">
+        <i class="tio-warning mt-1 mr-1"></i>
+        <strong>
+          <%= error_message %>
+        </strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <i class="tio-clear tio-lg"></i>
+        </button>
+      </div>
+      <div class="error-messages mt-2 auto-hide text-center" role="alert">
+      </div>
+    <% } %>
+  </div>
+  

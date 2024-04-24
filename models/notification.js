@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
 const notificationSchema = new Schema({
   title: {
@@ -13,10 +13,11 @@ const notificationSchema = new Schema({
   },
 
   recipient: {
-    
+    type: Schema.Types.ObjectId,
+    ref: "user",
   },
 
-// bid_interest, bid_invite bid_request_received, bid_submitted
+// bid_interest, bid_invite bid_request_received, bid_submitted, bid_accepted
   notification_type: {
     type: String,
     required: true,
@@ -29,5 +30,4 @@ const notificationSchema = new Schema({
   
 }, {timestamps: true});
 
-const Notification = mongoose.model("notification", notificationSchema);
-module.exports = Notification;
+module.exports = { Notification: model("notification", notificationSchema) };

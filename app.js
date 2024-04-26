@@ -25,17 +25,17 @@ app.use(express.urlencoded({
     extended: true,
   })
 )
-
+ 
 /*  Flash and Session*/
 app.use(session({
   secret: ')(*i8y9879G&hohuo*Y&%*^TRYF^%$##@@!#^%*&)&U(Yh09',
   resave: true,
   saveUninitialized: true,
   cookie: { maxAge: Date.now() + 3600000 },
-  store: MongoStore.create({
-    mongoUrl: process.env.mongoURL,
-    ttl: 300 * 24 * 60 * 60 
-  })
+  // store: MongoStore.create({
+  //   mongoUrl: process.env.mongoURL,
+  //   ttl: 300 * 24 * 60 * 60 
+  // })
 }))
 
 // initialize passport

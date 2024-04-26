@@ -58,14 +58,14 @@
 
                         <div class="card-body p-4">
                             <div class="p-3">
-                                <form class="custom-form" action="/">
+                                <form class="custom-form" method="post" action="/login">
 
                                     <div class="mb-3">
-                                        <input type="text" class="form-control" id="username" placeholder="Enter username">
+                                        <input type="text" class="form-control" id="username" placeholder="Enter username" name="email" required>
                                     </div>
                                     <div class="form-password mb-3 auth-pass-inputgroup">
                                         <div class="position-relative">
-                                            <input type="password" class="form-control" id="password-input" placeholder="Enter password">
+                                            <input type="password" class="form-control" id="password-input" placeholder="Enter password" name="password" required>
                                             <button type="button" class="btn btn-link position-absolute h-100 end-0 top-0 shadow-none" id="password-addon">
                                                 <i class="mdi mdi-eye-outline f-16 text-muted"></i>
                                             </button>

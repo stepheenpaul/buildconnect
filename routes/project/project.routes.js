@@ -8,7 +8,7 @@ const {
   allProjects
 } = require("../../controllers/project/project.controllers");
 
-router.route('/create-project')
+router.route('/new-project')
   .get(newProject)
   .post(upload.single('projectImage'), postNewProject);
 

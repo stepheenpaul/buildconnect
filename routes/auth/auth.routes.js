@@ -6,67 +6,6 @@ const passport = require("passport");
 const { User } = require("../../models/user");
 const LocalStrategy = require("passport-local").Strategy;
 
-// ===============================================================================================
-// Defining Local Strategy
-passport.use(new LocalStrategy({
-  usernameField: 'email',
-  passReqToCallback: true
-}, async (req, email, password, done) => {
-  let findUser = await User.findOne({ email }).populate(' plg');
-     
-  if (!findUser) {
-    return done(null, false, req.flash('error-message', 'User not found, Please check email'));
-  }
-
-  await bcrypt.compare(password, findUser.password, async (err, passwordMatched) => {
-    if (err) {
-      return err;
-    } 
-   
-    if (!passwordMatched) { 
-      return done(null, false, req.flash('error-message', 'Wrong password'));
-    }
-    
-    // if(!findUser.verified) {
-    //   return done(null, false, req.flash('error-message', 'You need to verify your email. Please check your mail.'));
-    // }
-    // else if(!findUser.verified) {
-    //   return done(null, false, req.flash('error-message', 'Your account has not been approved.'));
-    // }
-    // else if(findUser.status == 'suspended') {
-    //   return done(null, false, req.flash('error-message', 'Account suspended. Please contact admin.'));
-    // }
-    // else if(findUser.status == 'disapproved') {
-    //   return done(null, false, req.flash('error-message', 'Account disapproved. Please contact admin.'));
-    // }
- 
-    findUser.onlineStatus = 'available'
-    await findUser.save();
-    // console.log("I am here:::::: ")
-    
-    return done(null, findUser, req.flash('success-message', 'Login Successful'));
-  });
-
-}))
-
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async function (id, done) {
-  let user = await User.findById(id).populate({path:'activities', options:{ sort:{_id : -1} } });
-  // .populate('teams').populate('plg').populate('projects').populate('connections');
-  try {
-    const user = await User.findById(id)
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
-
-  done(err, user);
-});
-// ===============================================================================================
-
 // @hapijs/joi schema validation
 const userSchema = Joi.object({
   userType: Joi.string().required(),
@@ -77,9 +16,25 @@ const userSchema = Joi.object({
 });
 
 router.get('/', async (req, res) => {
-  res.render('pages/index', { title: 'Home page'})
+  if (res.user) {
+    return res.redirect('pages/dashboard', { title: '.:: User Dashboard'});
+
+  }else{
+    res.render("pages/login", {
+      title: ".:: Login",
+    });
+  }
 });
 
+router.get('/dashboard', async (req, res) => {
+  // if (res.user) {
+    return res.render('pages/dashboard', { title: '.:: User Dashboard'});
+
+  // }else{
+  //   return res.redirect("/login");
+  // }
+});
+ 
 router
   .route("/register")
   .get((req, res) => {
@@ -143,22 +98,29 @@ router
 
 // login  GET route
 router.get("/login", (req, res) => {
-    if (res.locals.user) {
-      res.redirect("/yee");
-    }
+  if (res.user) {
+    return res.redirect("/yee");
+  }else{
     res.render("pages/login", {
       title: ".:: Login",
     });
+  }
 });
   
 // login POST route
 router.post("/login", (req, res, next) => {
-passport.authenticate("local", {
-    successRedirect: "/dashboard",
-    failureRedirect: "/login",
-    failureFlash: true,
-    successFlash: true,
-})(req, res, next);
+  passport.authenticate("local", {
+      successRedirect: "/dashboard",
+      failureRedirect: "/login",
+      failureFlash: true,
+      successFlash: true,
+  })(req, res, next);
+});
+
+router.get("/logout", (req, res, next) => {
+  req.logOut();
+  req.flash("success-message", "Logout was successful");
+  res.redirect("/login");
 });
 
 module.exports = router;

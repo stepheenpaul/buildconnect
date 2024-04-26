@@ -7,8 +7,8 @@ const bidRouter = require("./bid/bid.routes")
 const routers = (app) => {
 
     app.use("/", authRouter)
-    app.use("/bid", isUserLoggedIn, bidRouter)
-    app.use("/project", isUserLoggedIn, projectRouter);
+    app.use("/bid", bidRouter)
+    app.use("/project", projectRouter);
     
 }
    

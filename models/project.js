@@ -1,13 +1,23 @@
-const mongoose = require("mongoose");
-const { Schema, model } = mongoose;
+const pkg = require("mongoose");
+const { model, Schema } = pkg;
 
 const projectSchema = new Schema({
-  title: {
+  name: {
+    type: String,
+    required: true,
+  },
+
+  location: {
     type: String,
     required: true,
   },
 
   description: {
+    type: String,
+    required: true,
+  },
+
+  budget: {
     type: String,
     required: true,
   },
@@ -20,7 +30,10 @@ const projectSchema = new Schema({
   ],
 
   bid_requests: [
-
+    {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    },
   ],
 
   builder: {
@@ -29,9 +42,13 @@ const projectSchema = new Schema({
   },
 
   author: {
-
+    type: Schema.Types.ObjectId,
+    ref: "user",
   },
   
+  project_docs: {
+
+  }
 }, {timestamps: true});
 
 module.exports = { Project:model("project", projectSchema) };

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
 const bidSchema = new Schema({
   title: {
@@ -18,9 +18,14 @@ const bidSchema = new Schema({
   },
 
   builder: {
-    
-  }
+    type: Schema.Types.ObjectId,
+    ref: "user",
+  },
+
+  bid_status: {
+    type: String
+  },
   
 }, {timestamps: true});
-const Bid = mongoose.model("bid", bidSchema);
-module.exports = Bid;
+
+module.exports = { Bid: model("bid", bidSchema) };

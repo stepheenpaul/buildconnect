@@ -1,8 +1,38 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const User = require("../models/register");
+const {User} = require("../models/user");
 const bcrypt = require("bcryptjs");
 
+passport.use("local", new LocalStrategy({
+  usernameField: "email",
+  passwordField: "password",
+  passReqToCallback: true
+}, async (req, email, password, done) => { 
+
+  try {
+      let user = await User.findOne({ email });
+         
+      if (!user) {
+        return done(null, false, req.flash('error-message', 'User not found, Please check email'));
+      }
+    
+      await bcrypt.compare(password, user.password, async (err, passwordMatched) => {
+        if (err) {
+          return err;
+        } 
+       
+        if (!passwordMatched) { 
+          return done(null, false, req.flash('error-message', 'Wrong password'));
+        }
+        
+        return done(null, user, req.flash('success-message', 'Login Successful'));
+      });
+ 
+
+  } catch (error) {
+    return done(error, false);
+  }
+}));
 
 //determines which data of the user object should be stored in the session
 passport.serializeUser((user, done) => {
@@ -18,28 +48,3 @@ passport.deserializeUser(async (id, done) => {
     done(error, null);
   }
 });
-
-passport.use("local", new LocalStrategy({
-  usernameField: "email",
-  passwordField: "password",
-  passReqToCallBack: false
-}, async (email, password, done) => {
-  try {
-    const user = await User.findOne({ "email": email });
-    console.log(user)
-    if (!user) {
-      return done(null, false, { message: "No user with this email" });
-    }
-
-    bcrypt.compare(password, user.password, function (err, isMatch) {
-      console.log('Does it math:', isMatch)
-      if (!isMatch) {
-        console.log("Password incorrect, please try again")
-        return done(null, false, { message: "Password Incorrect Please Try Again" });
-      }
-      return done(null, user)
-    });
-  } catch (error) {
-    return done(error, false);
-  }
-}));

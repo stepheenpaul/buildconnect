@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/register");
 const Joi = require("@hapi/joi");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
+const { User } = require("../../models/user");
+const LocalStrategy = require("passport-local").Strategy;
 
 // @hapijs/joi schema validation
 const userSchema = Joi.object({
@@ -14,6 +15,26 @@ const userSchema = Joi.object({
   confirmPassword: Joi.string(),
 });
 
+router.get('/', async (req, res) => {
+  if (res.user) {
+    return res.redirect('pages/dashboard', { title: '.:: User Dashboard'});
+
+  }else{
+    res.render("pages/login", {
+      title: ".:: Login",
+    });
+  }
+});
+
+router.get('/dashboard', async (req, res) => {
+  // if (res.user) {
+    return res.render('pages/dashboard', { title: '.:: User Dashboard'});
+
+  // }else{
+  //   return res.redirect("/login");
+  // }
+});
+ 
 router
   .route("/register")
   .get((req, res) => {
@@ -23,25 +44,26 @@ router
   })
   .post(async (req, res, next) => {
     try {
+      console.log(req.body)
       // @hapijs/joi validating inputs
       const result = await userSchema.validateAsync(req.body);
       if (result.error) {
         console.log("error validating user");
-        return req.flash("error", "something went wrong");
+        return req.flash("error-message", "something went wrong");
       }
 
       // @hapijs/joi validating useremail
       const userEmail = await User.findOne({ email: result.email });
       if (userEmail) {
         console.log("email already exist in our database");
-        req.flash("error", "email already registered, try another");
+        req.flash("error-message", "email already registered, try another");
         return res.redirect("/register");
       }
 
       // password validation
       if (result.password !== result.confirmPassword) {
         console.log("password not match");
-        req.flash("error", "password not match");
+        req.flash("error-message", "password not match");
         return res.redirect("/register");
       }
       // creating a new user
@@ -59,7 +81,7 @@ router
             .then((user) => {
               console.log("newUser has been saved successfully", user);
               req.flash(
-                "success",
+                "success-message",
                 "Your Registration was successful, Kindly login"
               );
               return res.redirect("/login");
@@ -76,22 +98,29 @@ router
 
 // login  GET route
 router.get("/login", (req, res) => {
-    if (res.locals.user) {
-      res.redirect("/yee");
-    }
+  if (res.user) {
+    return res.redirect("/yee");
+  }else{
     res.render("pages/login", {
       title: ".:: Login",
     });
+  }
 });
   
 // login POST route
 router.post("/login", (req, res, next) => {
-passport.authenticate("local", {
-    successRedirect: "/dashboard",
-    failureRedirect: "/login",
-    failureFlash: true,
-    successFlash: true,
-})(req, res, next);
+  passport.authenticate("local", {
+      successRedirect: "/dashboard",
+      failureRedirect: "/login",
+      failureFlash: true,
+      successFlash: true,
+  })(req, res, next);
+});
+
+router.get("/logout", (req, res, next) => {
+  req.logOut();
+  req.flash("success-message", "Logout was successful");
+  res.redirect("/login");
 });
 
 module.exports = router;
